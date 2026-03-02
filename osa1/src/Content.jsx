@@ -1,8 +1,8 @@
-const Content = ({ parts }) => {
+const Content = ( { parts } ) => {
   return (
     <div>
         {parts.map((part, index) =>
-          <p key={index}>{part.part} {part.exercises}</p>
+          <p key={index}>{part.name} {part.exercises}</p>
         )} 
     </div>
   )
