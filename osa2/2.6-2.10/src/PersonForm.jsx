@@ -6,16 +6,23 @@ const PersonForm = ({ persons, setPersons, personService }) => {
 
   const addPerson = (event) => {
     event.preventDefault()
-    const existingName = persons.some(person => person.name === newName)
-    const existingNumber = persons.some(person => person.number === newNumber)
+    const existingPerson = persons.find(person => person.name === newName)
 
-    if (existingName) {
-      alert(`${newName} is already added to phonebook`)
-      return
-    }
+    if (existingPerson) {
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        const updatedPerson = { 
+          ...existingPerson, 
+          number: newNumber 
+        }
 
-    if (existingNumber) {
-      alert(`${newNumber} is already added to phonebook`)
+        personService
+          .update(existingPerson.id, updatedPerson)
+          .then(returnedPerson => {
+            setPersons(persons.map(person => person.id !== existingPerson.id ? person : returnedPerson))
+            setNewName('')
+            setNewNumber('')
+          })
+      }
       return
     }
 
