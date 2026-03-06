@@ -1,4 +1,4 @@
-const Filter = ({ persons, search, handleSearchChange }) => {
+const Filter = ({ search, handleSearchChange }) => {
 
 
   return (
