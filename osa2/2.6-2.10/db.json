@@ -16,9 +16,9 @@
       "id": "4"
     },
     {
-      "id": "5",
-      "name": "t",
-      "number": "3"
+      "id": "6",
+      "name": "tumotin",
+      "number": "332"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

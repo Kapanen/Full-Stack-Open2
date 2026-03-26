@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const Persons = ({ persons, search = '', setPersons, personService }) => {
+const Persons = ({ persons, search = '', setPersons, personService, setNotification }) => {
     const filteredPersons = persons.filter(person =>
         person.name.toLowerCase().includes(search.toLowerCase()) ||
         person.number.includes(search)
@@ -18,6 +18,13 @@ const Persons = ({ persons, search = '', setPersons, personService }) => {
             .then(() => {
                 const updatedPersons = persons.filter(person => person.id !== id)
                 setPersons(updatedPersons)
+
+                setNotification({ message: `Deleted ${name}`, type: 'error' })
+
+                setTimeout(() => {
+                    setNotification({ message: '', type: '' })
+                }, 2000)
+
             })
             .catch(error => {
                 console.error(`Failed to delete person with id ${id}:`, error)

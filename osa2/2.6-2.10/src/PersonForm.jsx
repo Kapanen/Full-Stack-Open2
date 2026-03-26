@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const PersonForm = ({ persons, setPersons, personService }) => {
+const PersonForm = ({ persons, setPersons, personService, setNotification }) => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
 
@@ -15,13 +15,28 @@ const PersonForm = ({ persons, setPersons, personService }) => {
           number: newNumber 
         }
 
+
         personService
           .update(existingPerson.id, updatedPerson)
           .then(returnedPerson => {
             setPersons(persons.map(person => person.id !== existingPerson.id ? person : returnedPerson))
             setNewName('')
             setNewNumber('')
+
+            setNotification({ message: `Updated ${updatedPerson.name}'s number`, type: 'success' })
+
+            setTimeout(() => {
+              setNotification({ message: '', type: '' })
+            }, 2000)
           })
+        .catch(error => {
+        console.error(`Failed to update person with id ${existingPerson.id}:`, error)
+        setNotification({ message: `Information of ${existingPerson.name} has already been removed from server`, type: 'error' })
+
+        setTimeout(() => {
+          setNotification({ message: '', type: '' })
+        }, 2000)
+      })
       }
       return
     }
@@ -38,6 +53,12 @@ const PersonForm = ({ persons, setPersons, personService }) => {
         setPersons(persons.concat(returnedPerson))
         setNewName('')
         setNewNumber('')
+        
+        setNotification({ message: `Added ${returnedPerson.name}`, type: 'success' })
+
+        setTimeout(() => {
+          setNotification({ message: '', type: '' })
+        }, 2000)
       })
   }
 
