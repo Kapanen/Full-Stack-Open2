@@ -1,0 +1,3 @@
+[submodule "osa3/part3-notes-backed"]
+	path = osa3/part3-notes-backed
+	url = https://github.com/fullstack-hy2020/part3-notes-backend.git
