@@ -92,7 +92,7 @@ app.put('/api/persons/:id', (req, res, next) => {
   })
 
 app.get('/info', (req, res) => {
-  Person.count({}).then(persons => {
+  Person.countDocuments({}).then(persons => {
     const date = new Date()
     res.send(`<p>Phonebook has info for ${persons} people</p><p>${date}</p>`)
   })
