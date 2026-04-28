@@ -10,12 +10,16 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "build:ui": "shx rm -rf dist && cd C:/Users/Eetu/fullstack2/Full-Stack-Open2/osa2/2.6-2.10 && npm run build && shx cp -r dist  C:/Users/Eetu/fullstack2/Full-Stack-Open2/osa3/3.1",
+    "lint": "eslint .",
+    "build:ui": "shx rm -rf dist && cd C:/Users/retje/OneDrive/Työpöytä/Full-Stack-Open2/osa2/2.6-2.10 && npm run build && shx cp -r dist  C:/Users/retje/OneDrive/Työpöytä/Full-Stack-Open2/osa3/3.1",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "eslint": "^9.7.0",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^17.5.0",
     "nodemon": "^3.1.14",
     "shx": "^0.3.4"
   },

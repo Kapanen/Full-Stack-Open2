@@ -39,9 +39,9 @@ app.get('/api/persons/:id', (req, res, next) => {
       res.status(404).end()
     }
   })
-  .catch(error => {
-    next(error)
-  })
+    .catch(error => {
+      next(error)
+    })
 })
 
 app.post('/api/persons', (req, res, next) => {
@@ -89,7 +89,7 @@ app.put('/api/persons/:id', (req, res, next) => {
     .catch(error => {
       next(error)
     })
-  })
+})
 
 app.get('/info', (req, res) => {
   Person.countDocuments({}).then(persons => {
