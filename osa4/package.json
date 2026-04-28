@@ -1,0 +1,33 @@
+{
+  "name": "3.1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js",
+    "dev": "node --watch app.js",
+    "lint": "eslint .",
+    "build:ui": "shx rm -rf dist && cd C:/Users/retje/OneDrive/Työpöytä/Full-Stack-Open2/osa2/2.6-2.10 && npm run build && shx cp -r dist  C:/Users/retje/OneDrive/Työpöytä/Full-Stack-Open2/osa3/3.1",
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^9.7.0",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^17.5.0",
+    "nodemon": "^3.1.14",
+    "shx": "^0.3.4"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.5.0",
+    "morgan": "^1.10.1"
+  }
+}
