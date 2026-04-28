@@ -24,7 +24,7 @@ const App = () => {
   return (
     <div>
       <h1>Notes</h1>
-      <Notification message={notification} />
+      <Notification message={notification.message} type={notification.type} />
       <h2>Phonebook</h2>
       <Filter persons={persons} search={search} handleSearchChange={(event) => setSearch(event.target.value)} />
       <PersonForm persons={persons} setPersons={setPersons} personService={personService} setNotification={setNotification} />

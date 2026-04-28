@@ -6,13 +6,15 @@ const PersonForm = ({ persons, setPersons, personService, setNotification }) => 
 
   const addPerson = (event) => {
     event.preventDefault()
+    
+
     const existingPerson = persons.find(person => person.name === newName)
 
     if (existingPerson) {
       if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
-        const updatedPerson = { 
-          ...existingPerson, 
-          number: newNumber 
+        const updatedPerson = {
+          ...existingPerson,
+          number: newNumber
         }
 
 
@@ -29,23 +31,23 @@ const PersonForm = ({ persons, setPersons, personService, setNotification }) => 
               setNotification({ message: '', type: '' })
             }, 2000)
           })
-        .catch(error => {
-        console.error(`Failed to update person with id ${existingPerson.id}:`, error)
-        setNotification({ message: `Information of ${existingPerson.name} has already been removed from server`, type: 'error' })
+          .catch(error => {
+            console.error(`Failed to update person with id ${existingPerson.id}:`, error)
+            setNotification({ message: `Information of ${existingPerson.name} has already been removed from server`, type: 'error' })
 
-        setTimeout(() => {
-          setNotification({ message: '', type: '' })
-        }, 2000)
-      })
+            setTimeout(() => {
+              setNotification({ message: '', type: '' })
+            }, 2000)
+          })
       }
       return
     }
 
-    const newPerson = { 
-      name: newName, 
-      number: newNumber,
-      id: String(Math.max(...persons.map(p => parseInt(p.id) || 0), 0) + 1)
+    const newPerson = {
+      name: newName,
+      number: newNumber
     }
+    console.log('Adding person:', newPerson)
 
     personService
       .create(newPerson)
@@ -53,8 +55,17 @@ const PersonForm = ({ persons, setPersons, personService, setNotification }) => 
         setPersons(persons.concat(returnedPerson))
         setNewName('')
         setNewNumber('')
-        
+
         setNotification({ message: `Added ${returnedPerson.name}`, type: 'success' })
+        console.log('Person added successfully:', returnedPerson)
+        setTimeout(() => {
+          setNotification({ message: '', type: '' })
+        }, 2000)
+      })
+      .catch(error => {
+        const message = error.response?.data?.error || 'An error occurred while adding the person'
+        console.log('tumotin ', error.response.data)
+        setNotification({ message, type: 'error' })
 
         setTimeout(() => {
           setNotification({ message: '', type: '' })

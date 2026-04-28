@@ -4,10 +4,6 @@ const url = process.env.MONGODB_URI
 
 
 mongoose.set('strictQuery', false)
-mongoose.connect(url, {
-  retryWrites: true,
-  w: 'majority'
-})
 
 mongoose.connect(url)
   .then(() => {
@@ -19,8 +15,22 @@ mongoose.connect(url)
 
 
 const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    minlength: [3, 'Name must be at least 3 characters long'],
+    required: true
+  },
+  number: {
+    type: String,
+    minlength: [8, 'Number must be at least 8 characters long'],
+    required: true,
+    validate: {
+      validator: function(v) {
+        return /^\d{2,3}-\d{5,}$/.test(v)
+      },
+      message: 'Number must be in the format XXX-XXXXXX or XX-XXXXX'
+    }
+  }
 })
 
 personSchema.set('toJSON', {
