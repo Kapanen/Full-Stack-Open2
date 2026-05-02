@@ -2,12 +2,14 @@ const express = require('express')
 const mongoose = require('mongoose')
 const logger = require('./utils/logger')
 const config = require('./utils/config')
+const middleware = require('./utils/middleware')
 const blogsRouter = require('./controllers/blogs')
 
 
 require('dotenv').config()
+
+
 const app = express()
-app.use('/api/blogs', blogsRouter)
 
 const mongoUrl = config.MONGODB_URI
 mongoose.connect(mongoUrl)
@@ -19,8 +21,11 @@ mongoose.connect(mongoUrl)
   })
 
 app.use(express.json())
+app.use(middleware.requestLogger)
 
-const PORT = config.port
-app.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT}`)
-})
+app.use('/api/blogs', blogsRouter)
+
+app.use(middleware.unknownEndpoint)
+app.use(middleware.errorHandler)
+
+module.exports = app
