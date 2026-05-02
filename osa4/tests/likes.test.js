@@ -77,7 +77,7 @@ const listWithMultipleBlogs = [
     assert.strictEqual(result, 5)
   })
 
-  test('multiple blogs returns sum', () => {
+  test('multiple blogs returns sum of', () => {
     const result = listHelper.totalLikes(listWithMultipleBlogs)
     assert.strictEqual(result, 36)
   })
