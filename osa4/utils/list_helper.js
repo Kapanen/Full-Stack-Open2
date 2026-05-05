@@ -61,10 +61,23 @@ const mostLikes = (blogs) => {
     return most
 }
 
+// delete blog
+const deleteBlog = (blogs, id) => {
+    return blogs.filter(blog => blog.id !== id)
+
+}
+
+// edit blog
+const editBlog = (blogs, id, newBlog) => {
+    return blogs.map(blog => blog.id === id ? {...blog, ...newBlog} : blog)
+}
+
 module.exports = {
     dummy,
     totalLikes,
     favoriteBlog,
     mostBlogs,
-    mostLikes
+    mostLikes,
+    deleteBlog,
+    editBlog
 }

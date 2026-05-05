@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const helper = require('./test_helper')
 const assert = require('node:assert')
 
 const api = supertest(app)
@@ -96,6 +97,38 @@ describe('get /api/blogs', () => {
 
         const response2 = await api.get('/api/blogs')
         assert.strictEqual(response2.body.length, blogsatart.body.length)
+    })
+
+    test('deletation of a blog', async () => {
+        const blogsatart = await helper.blogsInDb()
+        const blogToDelete = blogsatart[0]  
+        
+        await api
+            .delete(`/api/blogs/${blogToDelete.id}`)
+            .expect(204)
+
+        const blogsAtEnd = await helper.blogsInDb()
+        assert.strictEqual(blogsAtEnd.length, blogsatart.length - 1)
+        const ids = blogsAtEnd.map(b => b.id)
+        assert(!ids.includes(blogToDelete.id))
+    })
+
+    test('editing a blog', async () => {
+        const blogsatart = await helper.blogsInDb()
+        const blogToEdit = blogsatart[0]  
+        const newBlogData = { title: 'edited', author: 'Edited', url: 'http://edited.com', likes: 10 }
+
+        await api
+            .put(`/api/blogs/${blogToEdit.id}`)
+            .send(newBlogData)
+            .expect(200)
+
+        const blogsAtEnd = await helper.blogsInDb()
+        const editedBlog = blogsAtEnd.find(b => b.id === blogToEdit.id)
+        assert.strictEqual(editedBlog.title, newBlogData.title)
+        assert.strictEqual(editedBlog.author, newBlogData.author)
+        assert.strictEqual(editedBlog.url, newBlogData.url)
+        assert.strictEqual(editedBlog.likes, newBlogData.likes)
     })
 })
 after(async () => {
