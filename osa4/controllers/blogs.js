@@ -1,24 +1,52 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 blogsRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({})
+  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
     response.json(blogs)
 })
 
+blogsRouter.get('/:id', async (request, response, next) => {
+  try {
+    const blog = await Blog.findById(request.params.id).populate('user', { username: 1, name: 1 })
+
+    if (!blog) {
+      return response.status(404).json({ error: 'blog not found' })
+    }
+
+    response.json(blog)
+  } catch (error) {
+    next(error)
+  }
+})
 
 blogsRouter.post('/', async (request, response, next) => {
   try {
   const body = request.body
+  const user = request.user
+
+
+  if (!user) {
+    return response.status(400).json({ error: 'no user found' })
+  }
 
   const blog = new Blog({
     title: body.title,
     author: body.author,
     url: body.url,
-    likes: body.likes || 0
+    likes: body.likes || 0,
+    user: user._id
   })
   
   const savedBlog = await blog.save()
+
+  user.blogs = user.blogs.concat(savedBlog._id)
+  await user.save()
+
+  const updatedUser = await User.findById(user._id).populate('blogs')
+  console.log('updatedUser:', updatedUser)
+
     response.status(201).json(savedBlog)
   } catch (error) {
     next(error)
@@ -27,13 +55,22 @@ blogsRouter.post('/', async (request, response, next) => {
 
 blogsRouter.delete('/:id', async (request, response, next) => {
   try {
-    const result = await Blog.findByIdAndDelete(request.params.id)
+    const token = request.token
+    const user = request.user
 
-    if (!result) {
+    if (!user) {
+      return response.status(401).json({ error: 'token missing or invalid' })
+    }
+
+    const blog = await Blog.findById(request.params.id)
+
+    if (!blog) {
       return response.status(404).json({ error: 'blog not found' })
     }
 
-    response.status(204).end()
+    await Blog.findByIdAndDelete(request.params.id)
+
+    response.status(204).send('blog deleted')
   } catch (error) {
     next(error)
   }

@@ -5,6 +5,8 @@ const app = require('../app')
 const Blog = require('../models/blog')
 const helper = require('./test_helper')
 const assert = require('node:assert')
+const bcrypt = require('bcrypt')
+const User = require('../models/user')
 
 const api = supertest(app)
 
@@ -22,8 +24,21 @@ const initialBlogs = [
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  const blogObjects = initialBlogs.map(blog => new Blog(blog))
-  await Promise.all(blogObjects.map(blog => blog.save()))
+  await User.deleteMany({})
+
+  const passwordHash = await bcrypt.hash('test', 10)
+
+  const user = new User({
+    username: 'tester',
+    passwordHash
+
+  })
+
+    await user.save()
+
+    const blogObjects = initialBlogs.map(blog => new Blog({ ...blog, user: user._id }))
+    await Promise.all(blogObjects.map(blog => blog.save()))
+
 })
 
 describe('get /api/blogs', () => {
@@ -53,8 +68,16 @@ describe('get /api/blogs', () => {
             title: 'd', author: 'D', url: 'http://d.com', likes: 4,
         }
 
+        const login = await api
+            .post('/api/login')
+            .send({ username: 'tester', password: 'test' })
+            .expect(200)
+
+        const token = login.body.token
+
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${token}`)
             .send(newBlog)
             .expect(201)
             .expect('Content-Type', /application\/json/)
@@ -64,11 +87,20 @@ describe('get /api/blogs', () => {
     })
 
     test('if likes property is missing, it defaults to 0', async () => {
+
+        const login = await api
+            .post('/api/login')
+            .send({ username: 'tester', password: 'test' })
+            .expect(200)
+        const token = login.body.token
+
         const newBlog = {
             title: 'e', author: 'E', url: 'http://e.com',
         }
+
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${token}`)
             .send(newBlog)
             .expect(201)
             .expect('Content-Type', /application\/json/)
@@ -102,9 +134,17 @@ describe('get /api/blogs', () => {
     test('deletation of a blog', async () => {
         const blogsatart = await helper.blogsInDb()
         const blogToDelete = blogsatart[0]  
+
+        const login = await api
+            .post('/api/login')
+            .send({ username: 'tester', password: 'test' })
+            .expect(200)
         
+        const token = login.body.token
+
         await api
             .delete(`/api/blogs/${blogToDelete.id}`)
+            .set('Authorization', `Bearer ${token}`)
             .expect(204)
 
         const blogsAtEnd = await helper.blogsInDb()
@@ -118,8 +158,16 @@ describe('get /api/blogs', () => {
         const blogToEdit = blogsatart[0]  
         const newBlogData = { title: 'edited', author: 'Edited', url: 'http://edited.com', likes: 10 }
 
+        const login = await api
+            .post('/api/login')
+            .send({ username: 'tester', password: 'test' })
+            .expect(200)
+
+        const token = login.body.token
+
         await api
             .put(`/api/blogs/${blogToEdit.id}`)
+            .set('Authorization', `Bearer ${token}`)
             .send(newBlogData)
             .expect(200)
 
