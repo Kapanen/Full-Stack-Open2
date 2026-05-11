@@ -25,6 +25,8 @@ blogsRouter.post('/', async (request, response, next) => {
   try {
   const body = request.body
   const user = request.user
+  console.log('user:', user)
+  console.log('token:', request.token)
 
 
   if (!user) {
@@ -44,10 +46,12 @@ blogsRouter.post('/', async (request, response, next) => {
   user.blogs = user.blogs.concat(savedBlog._id)
   await user.save()
 
+  const populatedBlog = await Blog.findById(savedBlog._id).populate('user', { username: 1, name: 1 })
+  console.log('populatedBlog:', populatedBlog)
+  response.status(201).json(populatedBlog)
+
   const updatedUser = await User.findById(user._id).populate('blogs')
   console.log('updatedUser:', updatedUser)
-
-    response.status(201).json(savedBlog)
   } catch (error) {
     next(error)
   }
